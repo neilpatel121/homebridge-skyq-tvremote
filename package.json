@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "displayName": "Sky Q TV Remote",
   "name": "homebridge-skyq-tvremote",
   "version": "1.0.0",
