@@ -12,7 +12,7 @@ import SkyRemote = require('sky-remote');
 import SkyQCheck = require('sky-q');
 
 const PLUGIN_NAME = 'homebridge-skyq-tvremote';
-const PLATFORM_NAME = 'homebridge-skyq-tvremote';
+const PLATFORM_NAME = 'skyq-tvremote';
 
 export default (api: API) => {
   api.registerPlatform(PLATFORM_NAME, SkyTVPlugin);
@@ -66,9 +66,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
 
   send = async (command: string) => {
     try {
-      this.remoteControl.press(command, (error) => {
-        this.log(error);
-      });
+      this.remoteControl.press(command);
     } catch (error) {
       this.log.error(error);
       return Promise.reject(error);
@@ -119,7 +117,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
             return callback();
           }
           this.log.info('set Active => setNewValue: ' + newValue);
-          this.send('PowerToggle')
+          this.send('power')
             .then(() => {
               this.activeState = newValue
                 ? this.api.hap.Characteristic.Active.ACTIVE
@@ -130,28 +128,6 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
               );
               callback();
             })
-            .catch((error) => {
-              this.log.error(error);
-              callback(error);
-            });
-        },
-      );
-
-    // handle input source changes
-    tvService.setCharacteristic(this.Characteristic.ActiveIdentifier, 1);
-    tvService
-      .getCharacteristic(this.Characteristic.ActiveIdentifier)
-      .on(
-        'set',
-        (
-          newValue: CharacteristicValue,
-          callback: CharacteristicSetCallback,
-        ) => {
-          // the value will be the value you set for the Identifier Characteristic
-          // on the Input Source service that was selected - see input sources below.
-          this.log.info('set Active Identifier => setNewValue: ' + newValue);
-          this.send('InputHdmi1')
-            .then(() => callback())
             .catch((error) => {
               this.log.error(error);
               callback(error);
@@ -264,25 +240,6 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
      * When a user selected an input the corresponding Identifier Characteristic
      * is sent to the TV Service ActiveIdentifier Characteristic handler.
      */
-
-    // HDMI 1 Input Source
-    const hdmi1InputService = tvAccessory.addService(
-      this.Service.InputSource,
-      'hdmi1',
-      'HDMI 1',
-    );
-    hdmi1InputService
-      .setCharacteristic(this.Characteristic.Identifier, 1)
-      .setCharacteristic(this.Characteristic.ConfiguredName, 'HDMI 1')
-      .setCharacteristic(
-        this.Characteristic.IsConfigured,
-        this.Characteristic.IsConfigured.CONFIGURED,
-      )
-      .setCharacteristic(
-        this.Characteristic.InputSourceType,
-        this.Characteristic.InputSourceType.HDMI,
-      );
-    tvService.addLinkedService(hdmi1InputService); // link to tv service
 
     // Switch
     const switchService = tvAccessory.addService(
