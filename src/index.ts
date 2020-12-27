@@ -15,10 +15,10 @@ const PLUGIN_NAME = 'homebridge-skyq-tvremote';
 const PLATFORM_NAME = 'homebridge-skyq-tvremote';
 
 export default (api: API) => {
-  api.registerPlatform(PLATFORM_NAME, HarmonyTVPlugin);
+  api.registerPlatform(PLATFORM_NAME, SkyTVPlugin);
 };
 
-class HarmonyTVPlugin implements IndependentPlatformPlugin {
+class SkyTVPlugin implements IndependentPlatformPlugin {
   private readonly log: Logging;
   private readonly config: PlatformConfig;
   private readonly api: API;
@@ -39,41 +39,38 @@ class HarmonyTVPlugin implements IndependentPlatformPlugin {
     this.Service = this.api.hap.Service;
     this.Characteristic = this.api.hap.Characteristic;
 
-    this.activeState = this.api.hap.Characteristic.Active.INACTIVE;
-
     this.publishExternalAccessory(this.config.name || 'TV');
     this.IpAddress = config.ipaddress as string;
 
     this.remoteControl = new SkyRemote(this.IpAddress);
-    this.boxCheck = new SkyQCheck(this.IpAddress);
+    this.boxCheck = new SkyQCheck({ip:this.IpAddress});
+    this.activeState = 0;
 
-    log.info('Example platform finished initializing!');
+    this.boxCheck.getPowerState().then(isOn=>{
+      if (isOn) {
+        this.activeState = 1;
+        this.log('sky box is on');
+        
+      } else {
+        this.activeState = 0;
+        this.log('the sky box is in standby');
+        
+      }
+    },
+    ).catch(err=>{
+      this.log('Perhaps looking at this error will help you figure out why' + err);
+    });
+
+    log.info('Sky TV platform finished initializing!');
   }
 
   send = async (command: string) => {
-    //let hub: HarmonyClient | undefined;
     try {
-      this.log(this.IpAddress);
       this.remoteControl.press(command, (error) => {
         this.log(error);
       });
-      /*
-      hub = await getHarmonyClient(this.config.host, {
-        remoteId: this.config.remoteId,
-      });
-      this.log.info(
-        
-      );
-      await hub.send('holdAction', { command, deviceId: this.config.deviceId });
-      hub.end();
-      */
     } catch (error) {
       this.log.error(error);
-      /*
-      if (hub && hub.end instanceof Function) {
-        hub.end();
-      }
-      */
       return Promise.reject(error);
     }
   };
