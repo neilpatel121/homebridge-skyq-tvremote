@@ -14,11 +14,6 @@ Setup Example Config:
 
 "platforms": [
         {
-            "name": "Config",
-            "port": 8080,
-            "platform": "config"
-        },
-        {
             "name": "Sky Q TV",
             "platform": "homebridge-skyq-tvremote",
             "ipaddress": "192.168.0.229"
