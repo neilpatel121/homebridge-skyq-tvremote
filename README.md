@@ -9,3 +9,23 @@
 # Homebridge Sky Q Tv Accessory
 
 The first TV Accerssory for SKY Q
+
+Setup Example Config:
+
+"platforms": [
+        {
+            "name": "Config",
+            "port": 8080,
+            "platform": "config"
+        },
+        {
+            "name": "Sky Q TV",
+            "platform": "homebridge-skyq-tvremote",
+            "ipaddress": "192.168.0.229"
+        },
+        {
+            "name": "Sky Q Mini",
+            "platform": "homebridge-skyq-tvremote",
+            "ipaddress": "192.168.0.238"
+        }
+    ]
