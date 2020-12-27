@@ -16,6 +16,6 @@ Setup Example Config:
         {
             "name": "Sky Q TV",
             "platform": "skyq-tvremote",
-            "ipaddress": "192.168.0.229"
+            "ipaddress": "192.xxx.x.x"
         }
     ]
