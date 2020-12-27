@@ -24,7 +24,11 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "sky",
+    "sky-q",
+    "sky tv",
+    "sky-q tv"
   ],
   "dependencies": {
     "sky-q": "^1.0.2",
