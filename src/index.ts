@@ -81,7 +81,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
     const tvAccessory = new this.api.platformAccessory(name, uuid);
 
     // set the accessory category
-    tvAccessory.category = this.api.hap.Categories.TELEVISION;
+    tvAccessory.category = this.api.hap.Categories.TV_SET_TOP_BOX;
 
     // add the tv service
     const tvService = tvAccessory.addService(this.Service.Television);
