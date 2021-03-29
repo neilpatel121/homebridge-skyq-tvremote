@@ -242,6 +242,8 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
      */
 
     // Switch
+  /**
+  * remove switch code
     const switchService = tvAccessory.addService(
       this.Service.Switch,
       `${name} Power State`,
@@ -264,6 +266,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
         },
       );
     tvService.addLinkedService(switchService);
+     */
 
     /**
      * Publish as external accessory
