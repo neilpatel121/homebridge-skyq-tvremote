@@ -242,7 +242,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
      */
 
     // Switch
-  /**
+    /**
   * removed switch code to address https://github.com/neilpatel121/homebridge-skyq-tvremote/issues/7
      */
 
