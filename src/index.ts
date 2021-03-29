@@ -243,29 +243,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
 
     // Switch
   /**
-  * remove switch code
-    const switchService = tvAccessory.addService(
-      this.Service.Switch,
-      `${name} Power State`,
-    );
-    switchService
-      .getCharacteristic(this.Characteristic.On)
-      .on(
-        'set',
-        (
-          newState: CharacteristicValue,
-          callback: CharacteristicSetCallback,
-        ) => {
-          this.activeState = newState
-            ? this.api.hap.Characteristic.Active.ACTIVE
-            : this.api.hap.Characteristic.Active.INACTIVE;
-          tvService
-            .getCharacteristic(this.Characteristic.Active)
-            .updateValue(this.activeState);
-          callback();
-        },
-      );
-    tvService.addLinkedService(switchService);
+  * removed switch code to address https://github.com/neilpatel121/homebridge-skyq-tvremote/issues/7
      */
 
     /**
