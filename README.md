@@ -7,8 +7,7 @@
 
 
 # Homebridge Sky Q Tv Accessory
-
-The first TV Accessory for SKY Q, ability to use control centre remote for a Sky Q box and adds it to the Home app as a Set Top Box
+Accessory for SKY Q which adds it to the Home app as a Set-Top Box with the ability to use the Control Centre remote functionality.
 
 ## Installation
 
@@ -35,6 +34,12 @@ npm install homebridge-skyq-tvremote -g
         }
     ]
 ```
+**name**: The Name of your Sky Q box in the Home app
+
+**ipaddress**: Local IP address of the device
+
+#### Note: If you rename one of the boxes via the UI or in the config it will need to be removed and added back into the Home app
+
 ### Multiple boxes
 
 If you have multiple Sky Q boxes then the config could look something like this:
@@ -59,19 +64,15 @@ If you have multiple Sky Q boxes then the config could look something like this:
         ]
 ```        
 
-**name**: The Name of your Sky Q box in the Home app
-
-**ipaddress**: Local IP address of the device.
-
 ## Add Sky Q box to the Home app
 
-There is a homekit limitation that allows only one TV per bridge. Therefore each Sky Q box will be exposed as external accessory and will not show up when only the homebridge-bridge was added. To add each of your Sky Q boxes
+There is a homekit limitation that allows only one Set-Top box per bridge. Therefore each Sky Q box will be exposed as external accessory and will not show up when only the homebridge-bridge was added. To add each Sky Q box:
 
 1. Open the Home App
-2. Type `+` in the top right corner to add a device
-3. Then click on **Don't Have a Code or Can't scan?**
-4. The found TV should appear under **Nearby Accessories** ... click on it
-5. Use the PIN that is set in **config.json** under `config > bridge > pin`
+1. Type `+` in the top right corner to add a device
+1. Then click on **Don't Have a Code or Can't scan?**
+1. The found TV should appear under **Nearby Accessories** ... click on it
+1. Use the PIN that is set in **config.json** under `config > bridge > pin`
 
 ## Getting the Sky Q Box IP address
 
