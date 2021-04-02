@@ -1,7 +1,8 @@
 {
   "pluginAlias": "skyq-tvremote",
   "pluginType": "platform",
-  "singular": true,
+  "footerDisplay": "For help please see the [README on GitHub ](https://github.com/neilpatel121/homebridge-skyq-tvremote).",
+  "singular": false,
   "schema": {
     "type": "object",
     "properties": {
@@ -9,7 +10,16 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Sky Q TV"
+        "placeholder": "Sky Q TV",
+        "description": "Name of the Set Top Box"
+      },
+      "ipaddress": {
+        "title": "IP Address",
+        "type": "string",
+        "required": true,
+        "placeholder": "192.168.0.0",
+        "format": "ipv4",
+        "description": "The IPv4 address of your Sky Q Box"
       }
     }
   }
