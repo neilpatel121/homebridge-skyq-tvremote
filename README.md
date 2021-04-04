@@ -1,7 +1,7 @@
 
 <p align="center">
 
-<img src="https://github.com/neilpatel121/homebridge-skyq-tvremote/raw/master/branding/logo.png" height="150">
+<img src="https://github.com/neilpatel121/homebridge-skyq-tvremote/raw/main/branding/logo.png" height="150">
 
 </p>
 
