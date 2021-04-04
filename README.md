@@ -30,7 +30,20 @@ npm install homebridge-skyq-tvremote -g
         {
             "name": "Sky Q TV",
             "platform": "skyq-tvremote",
-            "ipaddress": "192.xxx.x.x"
+            "devices": [
+                {
+                    "name": "Sky Q TV",
+                    "ipaddress": "192.xxx.x.1"
+                },
+                {
+                    "name": "Sky Q Mini",
+                    "ipaddress": "192.xxx.x.2"
+                },
+                {
+                    "name": "Sky Q Mini 2",
+                    "ipaddress": "192.xxx.x.3"
+                }
+            ]
         }
     ]
 ```
@@ -39,30 +52,6 @@ npm install homebridge-skyq-tvremote -g
 **ipaddress**: Local IP address of the device
 
 #### Note: If you rename one of the boxes via the UI or in the config it will need to be removed and added back into the Home app
-
-### Multiple boxes
-
-If you have multiple Sky Q boxes then the config could look something like this:
-
-```json
-"platforms": [
-        {
-            "name": "Sky Q TV",
-            "platform": "skyq-tvremote",
-            "ipaddress": "192.xxx.x.1"
-        },
-        {
-            "name": "Sky Q Mini",
-            "platform": "skyq-tvremote",
-            "ipaddress": "192.xxx.x.2"
-        },
-        {
-            "name": "Sky Q Mini 2",
-            "platform": "skyq-tvremote",
-            "ipaddress": "192.xxx.x.3"
-        }
-        ]
-```        
 
 ## Add Sky Q box to the Home app
 
