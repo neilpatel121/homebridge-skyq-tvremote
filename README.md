@@ -1,7 +1,7 @@
 
 <p align="center">
 
-<img src="https://github.com/homebridge/branding/raw/master/logos/homebridge-wordmark-logo-vertical.png" width="150">
+<img src="https://github.com/neilpatel121/homebridge-skyq-tvremote/raw/master/branding/logo.png" height="150">
 
 </p>
 
