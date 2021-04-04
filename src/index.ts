@@ -9,7 +9,7 @@ import {
   Logging,
   PlatformAccessory,
   PlatformConfig,
-} from "homebridge";
+} from 'homebridge';
 
 import SkyRemote = require('sky-remote');
 import SkyQCheck = require('sky-q');
@@ -30,12 +30,12 @@ export = (api: API) => {
 };
 
 interface SkyTVDeviceConfig {
-  name?: string,
-  ipAddress?: string
+  name?: string;
+  ipAddress?: string;
 }
 
 interface SkyTVConfig extends PlatformConfig, SkyTVDeviceConfig {
-  devices?: SkyTVDeviceConfig[]
+  devices?: SkyTVDeviceConfig[];
 }
 
 class SkyTVPlugin implements IndependentPlatformPlugin {
@@ -62,7 +62,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
       this.publishExternalAccessory(deviceConfig);
     }
 
-    log.info("Sky TV platform finished initializing!");
+    log.info('Sky TV platform finished initializing!');
   }
 
   prepareDeviceConfig(key: number | null, config: SkyTVDeviceConfig): SkyTVDeviceConfig {
@@ -72,15 +72,21 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
       } else {
         config.name = `TV ${key + 1}`;
 
-        if (this.names.includes(config.name)) this.log.error(`Duplicate name at device ${key + 1}.`);
+        if (this.names.includes(config.name)) {
+          this.log.error(`Duplicate name at device ${key + 1}.`);
+        }
       }
     }
 
     if (!config.ipAddress) {
       if (key === null) {
-        if (!config.ipAddress) this.log.error('IP address not set.');
+        if (!config.ipAddress) {
+          this.log.error('IP address not set.');
+        }
       } else {
-        if (!config.ipAddress) this.log.error(`IP address not set at device ${key + 1}.`);
+        if (!config.ipAddress) {
+          this.log.error(`IP address not set at device ${key + 1}.`);
+        }
       }
     }
 
@@ -88,8 +94,12 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
   }
 
   publishExternalAccessory(config: SkyTVDeviceConfig) {
-    if (!config.name) return;
-    if (!config.ipAddress) return;
+    if (!config.name) {
+      return;
+    }
+    if (!config.ipAddress) {
+      return;
+    }
 
     const remoteControl = new SkyRemote(config.ipAddress);
     const boxCheck = new SkyQCheck({ ip: config.ipAddress });
@@ -130,7 +140,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
     // Handle on / off events using the active characteristic
     tvService.getCharacteristic(hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        this.log.info("Get Active: " + (activeState ? 'ACTIVE': 'INACTIVE'));
+        this.log.info('Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
         callback(undefined, activeState);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
@@ -139,7 +149,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
           return callback();
         }
 
-        this.log.info("Set Active: " + (value ? 'ACTIVE': 'INACTIVE'));
+        this.log.info('Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
 
         this.send(remoteControl, 'power').then(() => {
           activeState = value ? hap.Characteristic.Active.ACTIVE : hap.Characteristic.Active.INACTIVE;
@@ -149,8 +159,8 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
           this.log.error(error);
           callback(error);
         });
-      }
-    );
+      },
+      );
 
     // Handle remote control input
     tvService.getCharacteristic(hap.Characteristic.RemoteKey)
@@ -192,11 +202,11 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
           callback(error);
         });
       },
-    );
+      );
 
     // Create the speaker service
     const speakerService = new hap.Service.TelevisionSpeaker(config.name);
-    speakerService.setCharacteristic(hap.Characteristic.Active, hap.Characteristic.Active.ACTIVE)
+    speakerService.setCharacteristic(hap.Characteristic.Active, hap.Characteristic.Active.ACTIVE);
     speakerService.setCharacteristic(hap.Characteristic.VolumeControlType, hap.Characteristic.VolumeControlType.RELATIVE);
 
     // Handle volume control
@@ -222,7 +232,7 @@ class SkyTVPlugin implements IndependentPlatformPlugin {
           callback(error);
         });
       },
-    );
+      );
 
     // Add the speaker service
     tvService.addLinkedService(speakerService);
