@@ -32,6 +32,7 @@
     "sky-q tv"
   ],
   "dependencies": {
+    "semver": "^7.3.5",
     "sky-q": "^1.0.2",
     "sky-remote": "^1.2.0"
   },
