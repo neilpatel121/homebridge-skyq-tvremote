@@ -18,7 +18,7 @@
             "placeholder": "Sky Q TV",
             "description": "Name of the set-top box."
           },
-          "ipaddress": {
+          "ipAddress": {
             "title": "IP Address",
             "type": "string",
             "required": true,
