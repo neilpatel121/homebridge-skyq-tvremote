@@ -97,13 +97,13 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     boxCheck.getPowerState().then(isOn => {
       if (isOn) {
         activeState = this.api.hap.Characteristic.Active.ACTIVE;
-        this.log('Sky box is on');
+        this.log(`[${config.name}]`, 'Sky box is on');
       } else {
         activeState = this.api.hap.Characteristic.Active.INACTIVE;
-        this.log('The sky box is in standby');
+        this.log(`[${config.name}]`, 'The sky box is in standby');
       }
     }).catch(error => {
-      this.log.error('Perhaps looking at this error will help you figure out why');
+      this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
       this.log.error(error);
     });
 
@@ -135,16 +135,16 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     // Handle on / off events using the active characteristic
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        this.log.info('Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
+        this.log.info(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
         callback(undefined, activeState);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         if (!!value === !!activeState) {
-          this.log.info('Skipping Active: new value is equal to current value');
+          this.log.info(`[${config.name}]`, 'Skipping Active: new value is equal to current value');
           return callback();
         }
 
-        this.log.info('Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
+        this.log.info(`[${config.name}]`, 'Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
 
         this.send(remoteControl, 'power').then(() => {
           activeState = value ? this.api.hap.Characteristic.Active.ACTIVE : this.api.hap.Characteristic.Active.INACTIVE;
@@ -187,11 +187,11 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         })();
 
         if (!command) {
-          this.log.error(`Skipping Remote Key: unknown new value: ${value}`);
+          this.log.error(`[${config.name}]`, `Skipping Remote Key: unknown new value: ${value}`);
           return callback();
         }
         
-        this.log.info('Set Remote Key: ' + command);
+        this.log.info(`[${config.name}]`, 'Set Remote Key: ' + command);
         this.send(remoteControl, command).then(() => callback()).catch((error) => {
           this.log.error(error);
           callback(error);
@@ -217,11 +217,11 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         })();
 
         if (!command) {
-          this.log.error(`Skipping Volume Selector: unknown newValue: ${value}`);
+          this.log.error(`[${config.name}]`, `Skipping Volume Selector: unknown newValue: ${value}`);
           return callback();
         }
         
-        this.log.info('Set Volume Selector: ' + command);
+        this.log.info(`[${config.name}]`, 'Set Volume Selector: ' + command);
         this.send(remoteControl, command).then(() => callback()).catch((error) => {
           this.log.error(error);
           callback(error);
