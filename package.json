@@ -1,8 +1,8 @@
 {
   "displayName": "Sky Q TV Remote",
   "name": "homebridge-skyq-tvremote",
-  "version": "1.1.1",
-  "betaVersion": "1.1.1",
+  "version": "1.1.2",
+  "betaVersion": "1.1.2",
   "description": "Exposes and Sky Q Box as a TV Accessory in HomeBridge, allow you to use the Remote UI in Control Centre",
   "license": "Apache-2.0",
   "repository": {
