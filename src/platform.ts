@@ -17,7 +17,6 @@ import SkyRemote = require('sky-remote');
 import SkyQCheck = require('sky-q');
 
 let hap: HAP;
-let Accessory: typeof PlatformAccessory;
 
 type ActiveCharacterstic = HAP['Characteristic']['Active']['INACTIVE'] | HAP['Characteristic']['Active']['ACTIVE'];
 
@@ -115,7 +114,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     const uuid = this.api.hap.uuid.generate(`homebridge:${PLUGIN_NAME}:` + config.ipAddress);
 
     // Create the accessory
-    const accessory = new Accessory(config.name, uuid);
+    const accessory = new this.api.platformAccessory(config.name, uuid);
 
     // Set the accessory category
     accessory.category = this.api.hap.Categories.TV_SET_TOP_BOX;
