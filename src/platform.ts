@@ -119,7 +119,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     accessory.category = this.api.hap.Categories.TV_SET_TOP_BOX;
 
     // Add the accessory information service
-    const accessoryInfoService = accessory.addService(this.api.hap.Service.AccessoryInformation);
+    const accessoryInfoService = accessory.getService(this.api.hap.Service.AccessoryInformation)!;
     accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Manufacturer, 'Sky');
 
     // Add the TV service
