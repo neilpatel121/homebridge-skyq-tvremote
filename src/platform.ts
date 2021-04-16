@@ -96,14 +96,14 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     const remoteControl = new SkyRemote(config.ipAddress);
     const boxCheck = new SkyQCheck({ ip: config.ipAddress });
 
-    let activeState: ActiveCharacterstic = hap.Characteristic.Active.INACTIVE;
+    let activeState: ActiveCharacterstic = 0;
 
     boxCheck.getPowerState().then(isOn => {
       if (isOn) {
-        activeState = hap.Characteristic.Active.ACTIVE;
+        activeState = 1;
         this.log('Sky box is on');
       } else {
-        activeState = hap.Characteristic.Active.INACTIVE;
+        activeState = 0;
         this.log('The sky box is in standby');
       }
     }).catch(error => {
@@ -148,7 +148,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         this.log.info('Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
 
         this.send(remoteControl, 'power').then(() => {
-          activeState = value ? hap.Characteristic.Active.ACTIVE : hap.Characteristic.Active.INACTIVE;
+          activeState = value ? 1 : 0;
           tvService.updateCharacteristic(hap.Characteristic.Active, activeState);
           callback();
         }).catch((error) => {
