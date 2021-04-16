@@ -15,8 +15,6 @@ import { PLUGIN_NAME } from './settings';
 import SkyRemote = require('sky-remote');
 import SkyQCheck = require('sky-q');
 
-let hap: HAP;
-
 type ActiveCharacterstic = HAP['Characteristic']['Active']['INACTIVE'] | HAP['Characteristic']['Active']['ACTIVE'];
 
 interface SkyTVDeviceConfig {
@@ -203,8 +201,8 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     // Add the speaker service
     const speakerService = accessory.addService(this.api.hap.Service.TelevisionSpeaker);
-    speakerService.setCharacteristic(this.api.hap.Characteristic.Active, hap.Characteristic.Active.ACTIVE);
-    speakerService.setCharacteristic(this.api.hap.Characteristic.VolumeControlType, hap.Characteristic.VolumeControlType.RELATIVE);
+    speakerService.setCharacteristic(this.api.hap.Characteristic.Active, this.api.hap.Characteristic.Active.ACTIVE);
+    speakerService.setCharacteristic(this.api.hap.Characteristic.VolumeControlType, this.api.hap.Characteristic.VolumeControlType.RELATIVE);
 
     // Handle volume control
     speakerService.getCharacteristic(this.api.hap.Characteristic.VolumeSelector)
