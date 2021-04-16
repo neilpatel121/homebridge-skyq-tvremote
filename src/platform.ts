@@ -96,14 +96,14 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     const remoteControl = new SkyRemote(config.ipAddress);
     const boxCheck = new SkyQCheck({ ip: config.ipAddress });
 
-    let activeState: ActiveCharacterstic = 0;
+    let activeState: ActiveCharacterstic = this.api.hap.Characteristic.Active.INACTIVE;
 
     boxCheck.getPowerState().then(isOn => {
       if (isOn) {
-        activeState = 1;
+        activeState = this.api.hap.Characteristic.Active.ACTIVE;
         this.log('Sky box is on');
       } else {
-        activeState = 0;
+        activeState = this.api.hap.Characteristic.Active.INACTIVE;
         this.log('The sky box is in standby');
       }
     }).catch(error => {
@@ -112,29 +112,32 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     });
 
     // Generate a UUID
-    const uuid = hap.uuid.generate(`homebridge:${PLUGIN_NAME}:` + config.ipAddress);
+    const uuid = this.api.hap.uuid.generate(`homebridge:${PLUGIN_NAME}:` + config.ipAddress);
 
     // Create the accessory
     const accessory = new Accessory(config.name, uuid);
 
     // Set the accessory category
-    accessory.category = hap.Categories.TV_SET_TOP_BOX;
+    accessory.category = this.api.hap.Categories.TV_SET_TOP_BOX;
 
     // Add the accessory information service
-    const accessoryInfoService = accessory.addService(hap.Service.AccessoryInformation);
-    accessoryInfoService.setCharacteristic(hap.Characteristic.Manufacturer, 'Sky');
+    const accessoryInfoService = accessory.addService(this.api.hap.Service.AccessoryInformation);
+    accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Manufacturer, 'Sky');
 
     // Add the TV service
-    const tvService = accessory.addService(hap.Service.Television);
+    const tvService = accessory.addService(this.api.hap.Service.Television);
 
     // Set the TV name
-    tvService.setCharacteristic(hap.Characteristic.ConfiguredName, config.name);
+    tvService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, config.name);
 
     // Set sleep discovery characteristic
-    tvService.setCharacteristic(hap.Characteristic.SleepDiscoveryMode, hap.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
+    tvService.setCharacteristic(
+      this.api.hap.Characteristic.SleepDiscoveryMode,
+      this.api.hap.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE,
+    );
 
     // Handle on / off events using the active characteristic
-    tvService.getCharacteristic(hap.Characteristic.Active)
+    tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         this.log.info('Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
         callback(undefined, activeState);
@@ -148,8 +151,8 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         this.log.info('Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
 
         this.send(remoteControl, 'power').then(() => {
-          activeState = value ? 1 : 0;
-          tvService.updateCharacteristic(hap.Characteristic.Active, activeState);
+          activeState = value ? this.api.hap.Characteristic.Active.ACTIVE : this.api.hap.Characteristic.Active.INACTIVE;
+          tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
           callback();
         }).catch((error) => {
           this.log.error(error);
@@ -159,31 +162,31 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       );
 
     // Handle remote control input
-    tvService.getCharacteristic(hap.Characteristic.RemoteKey)
+    tvService.getCharacteristic(this.api.hap.Characteristic.RemoteKey)
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         const command: string | undefined = (() => {
           switch (value) {
-            case hap.Characteristic.RemoteKey.REWIND:
+            case this.api.hap.Characteristic.RemoteKey.REWIND:
               return 'rewind';
-            case hap.Characteristic.RemoteKey.FAST_FORWARD:
+            case this.api.hap.Characteristic.RemoteKey.FAST_FORWARD:
               return 'fastforward';
-            case hap.Characteristic.RemoteKey.ARROW_UP:
+            case this.api.hap.Characteristic.RemoteKey.ARROW_UP:
               return 'up';
-            case hap.Characteristic.RemoteKey.ARROW_DOWN:
+            case this.api.hap.Characteristic.RemoteKey.ARROW_DOWN:
               return 'down';
-            case hap.Characteristic.RemoteKey.ARROW_LEFT:
+            case this.api.hap.Characteristic.RemoteKey.ARROW_LEFT:
               return 'left';
-            case hap.Characteristic.RemoteKey.ARROW_RIGHT:
+            case this.api.hap.Characteristic.RemoteKey.ARROW_RIGHT:
               return 'right';
-            case hap.Characteristic.RemoteKey.SELECT:
+            case this.api.hap.Characteristic.RemoteKey.SELECT:
               return 'select';
-            case hap.Characteristic.RemoteKey.BACK:
+            case this.api.hap.Characteristic.RemoteKey.BACK:
               return 'backup';
-            case hap.Characteristic.RemoteKey.PLAY_PAUSE:
+            case this.api.hap.Characteristic.RemoteKey.PLAY_PAUSE:
               return 'play';
-            case hap.Characteristic.RemoteKey.INFORMATION:
+            case this.api.hap.Characteristic.RemoteKey.INFORMATION:
               return 'tvguide';
-            case hap.Characteristic.RemoteKey.EXIT:
+            case this.api.hap.Characteristic.RemoteKey.EXIT:
           }
         })();
 
@@ -201,18 +204,18 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       );
 
     // Add the speaker service
-    const speakerService = accessory.addService(hap.Service.TelevisionSpeaker);
-    speakerService.setCharacteristic(hap.Characteristic.Active, hap.Characteristic.Active.ACTIVE);
-    speakerService.setCharacteristic(hap.Characteristic.VolumeControlType, hap.Characteristic.VolumeControlType.RELATIVE);
+    const speakerService = accessory.addService(this.api.hap.Service.TelevisionSpeaker);
+    speakerService.setCharacteristic(this.api.hap.Characteristic.Active, hap.Characteristic.Active.ACTIVE);
+    speakerService.setCharacteristic(this.api.hap.Characteristic.VolumeControlType, hap.Characteristic.VolumeControlType.RELATIVE);
 
     // Handle volume control
-    speakerService.getCharacteristic(hap.Characteristic.VolumeSelector)
+    speakerService.getCharacteristic(this.api.hap.Characteristic.VolumeSelector)
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         const command = (() => {
           switch (value) {
-            case hap.Characteristic.VolumeSelector.INCREMENT:
+            case this.api.hap.Characteristic.VolumeSelector.INCREMENT:
               return 'channelup';
-            case hap.Characteristic.VolumeSelector.DECREMENT:
+            case this.api.hap.Characteristic.VolumeSelector.DECREMENT:
               return 'channeldown';
           }
         })();
