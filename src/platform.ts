@@ -7,7 +7,6 @@ import {
   HAP,
   IndependentPlatformPlugin,
   Logging,
-  PlatformAccessory,
   PlatformConfig,
 } from 'homebridge';
 
