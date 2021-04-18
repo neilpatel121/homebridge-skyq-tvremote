@@ -120,7 +120,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     const accessoryInfoService = accessory.getService(this.api.hap.Service.AccessoryInformation)!;
     accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Manufacturer, 'Sky');
 
-    boxCheck._getSystemInformation().then(info => {
+    boxCheck._getSystemInformation({}).then(info => {
       if (info.manufacturer) {
         accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Manufacturer, info.manufacturer);
       }
