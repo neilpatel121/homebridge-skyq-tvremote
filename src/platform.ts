@@ -125,8 +125,8 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Manufacturer, info.manufacturer);
       }
       
-      if (info.modelNumber) {
-        accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Model, info.modelNumber);
+      if (info.deviceType) {
+        accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.Model, info.deviceType);
       }
 
       if (info.serialNumber) {
