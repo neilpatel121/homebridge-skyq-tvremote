@@ -302,7 +302,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         reject(error);
       });
     });
-  }
+  };
 
   send = async (remoteControl: SkyRemote, command: string | string[]) => {
     try {
