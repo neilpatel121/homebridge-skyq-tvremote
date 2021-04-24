@@ -165,12 +165,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         this.getActive(boxCheck).then((activeState) => {
-          if (activeState) {
-            this.log(`[${config.name}]`, 'Sky box is on');
-          } else {
-            this.log(`[${config.name}]`, 'The sky box is in standby');
-          }
-
           this.log.info(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
           callback(undefined, activeState);
         }).catch((error) => {
@@ -181,12 +175,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.getActive(boxCheck).then((activeState) => {
-          if (activeState) {
-            this.log(`[${config.name}]`, 'Sky box is on');
-          } else {
-            this.log(`[${config.name}]`, 'The sky box is in standby');
-          }
-
           if (!!value === !!activeState) {
             this.log.info(`[${config.name}]`, 'Skipping Active: new value is equal to current value');
             return callback();
@@ -284,6 +272,16 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     // will be exposed as an additional accessory and must be paired separately with the pincode of homebridge
     this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+
+    setInterval(() => {
+      this.getActive(boxCheck).then((activeState) => {
+        this.log.info(`[${config.name}]`, 'Update Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
+        tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
+      }).catch((error) => {
+        this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
+        this.log.error(error);
+      });
+    }, 10000);
   }
 
   getActive = async (boxCheck: SkyQCheck): Promise<ActiveCharacterstic> => {
