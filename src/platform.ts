@@ -291,13 +291,10 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       boxCheck.getPowerState().then(isOn => {
         if (isOn) {
           resolve(this.api.hap.Characteristic.Active.ACTIVE);
-          this.log(`[${config.name}]`, 'Sky box is on');
         } else {
           resolve(this.api.hap.Characteristic.Active.INACTIVE);
-          this.log(`[${config.name}]`, 'The sky box is in standby');
         }
       }).catch(error => {
-        this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
         this.log.error(error);
         reject(error);
       });
