@@ -164,7 +164,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     // Handle on / off events using the active characteristic
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        this.getActive(remoteControl).then((activeState) => {
+        this.getActive(boxCheck).then((activeState) => {
           if (activeState) {
             this.log(`[${config.name}]`, 'Sky box is on');
           } else {
@@ -180,7 +180,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         });
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-        this.getActive(remoteControl).then((activeState) => {
+        this.getActive(boxCheck).then((activeState) => {
           if (activeState) {
             this.log(`[${config.name}]`, 'Sky box is on');
           } else {
