@@ -149,19 +149,27 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     boxCheck._request('as/services').then(data => {
       if (data.services) {
         data.services.forEach(service => {
-          if (!service.t) {
+          if (!service.t || !service.c) {
             return;
           }
 
+          tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
+            .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+              const input = value as string;
+
+              this.log.info(`[${config.name}]`, 'Set Input:', value);
+              this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input.split('') ]).then(() => callback()).catch((error) => {
+                this.log.error(error);
+                callback(error);
+              });
+            });
+
           const inputService = accessory.addService(this.api.hap.Service.InputSource);
+          inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, service.c);
           inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
           inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
           inputService.setCharacteristic(this.api.hap.Characteristic.InputSourceType, this.api.hap.Characteristic.InputSourceType.TUNER);
           inputService.setCharacteristic(this.api.hap.Characteristic.InputDeviceType, this.api.hap.Characteristic.InputSourceType.TUNER);
-
-          if (service.c) {
-            inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, service.c);
-          }
 
           tvService.addLinkedService(inputService);
         });
@@ -269,7 +277,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
   }
 
-  send = async (remoteControl: SkyRemote, command: string) => {
+  send = async (remoteControl: SkyRemote, command: string | string[]) => {
     try {
       remoteControl.press(command);
     } catch (error) {
