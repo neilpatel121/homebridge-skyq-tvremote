@@ -146,6 +146,26 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       this.api.hap.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE,
     );
 
+    boxCheck._request('as/services').then(data => {
+      if (data.services) {
+        data.services.forEach(service => {
+          if (!service.t) return;
+
+          const inputService = accessory.addService(this.api.hap.Service.InputSource);
+          inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
+          inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
+          inputService.setCharacteristic(this.api.hap.Characteristic.InputSourceType, this.api.hap.Characteristic.InputSourceType.TUNER);
+          inputService.setCharacteristic(this.api.hap.Characteristic.InputDeviceType, this.api.hap.Characteristic.InputSourceType.TUNER);
+
+          if (service.c) {
+            inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, service.c);
+          }
+
+          tvService.addLinkedService(inputService);
+        });
+      }
+    });
+
     // Handle on / off events using the active characteristic
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
