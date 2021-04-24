@@ -149,7 +149,9 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     boxCheck._request('as/services').then(data => {
       if (data.services) {
         data.services.forEach(service => {
-          if (!service.t) return;
+          if (!service.t) {
+            return;
+          }
 
           const inputService = accessory.addService(this.api.hap.Service.InputSource);
           inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
