@@ -92,21 +92,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     const remoteControl = new SkyRemote(config.ipAddress);
     const boxCheck = new SkyQCheck({ ip: config.ipAddress });
 
-    let activeState: ActiveCharacterstic = this.api.hap.Characteristic.Active.INACTIVE;
-
-    boxCheck.getPowerState().then(isOn => {
-      if (isOn) {
-        activeState = this.api.hap.Characteristic.Active.ACTIVE;
-        this.log(`[${config.name}]`, 'Sky box is on');
-      } else {
-        activeState = this.api.hap.Characteristic.Active.INACTIVE;
-        this.log(`[${config.name}]`, 'The sky box is in standby');
-      }
-    }).catch(error => {
-      this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
-      this.log.error(error);
-    });
-
     // Generate a UUID
     const uuid = this.api.hap.uuid.generate(`homebridge:${PLUGIN_NAME}:` + config.ipAddress);
 
@@ -179,22 +164,46 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     // Handle on / off events using the active characteristic
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        this.log.info(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
-        callback(undefined, activeState);
+        this.getActive(remoteControl).then((activeState) => {
+          if (activeState) {
+            this.log(`[${config.name}]`, 'Sky box is on');
+          } else {
+            this.log(`[${config.name}]`, 'The sky box is in standby');
+          }
+
+          this.log.info(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
+          callback(undefined, activeState);
+        }).catch((error) => {
+          this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
+          this.log.error(error);
+          callback(error);
+        });
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-        if (!!value === !!activeState) {
-          this.log.info(`[${config.name}]`, 'Skipping Active: new value is equal to current value');
-          return callback();
-        }
+        this.getActive(remoteControl).then((activeState) => {
+          if (activeState) {
+            this.log(`[${config.name}]`, 'Sky box is on');
+          } else {
+            this.log(`[${config.name}]`, 'The sky box is in standby');
+          }
 
-        this.log.info(`[${config.name}]`, 'Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
-
-        this.send(remoteControl, 'power').then(() => {
-          activeState = value ? this.api.hap.Characteristic.Active.ACTIVE : this.api.hap.Characteristic.Active.INACTIVE;
-          tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
-          callback();
+          if (!!value === !!activeState) {
+            this.log.info(`[${config.name}]`, 'Skipping Active: new value is equal to current value');
+            return callback();
+          }
+  
+          this.log.info(`[${config.name}]`, 'Set Active: ' + (value ? 'ACTIVE': 'INACTIVE'));
+  
+          this.send(remoteControl, 'power').then(() => {
+            activeState = value ? this.api.hap.Characteristic.Active.ACTIVE : this.api.hap.Characteristic.Active.INACTIVE;
+            tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
+            callback();
+          }).catch((error) => {
+            this.log.error(error);
+            callback(error);
+          });
         }).catch((error) => {
+          this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
           this.log.error(error);
           callback(error);
         });
@@ -275,6 +284,24 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     // will be exposed as an additional accessory and must be paired separately with the pincode of homebridge
     this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+  }
+
+  getActive = async (boxCheck: SkyQCheck): Promise<ActiveCharacterstic> => {
+    return new Promise<ActiveCharacterstic>((resolve, reject) => {
+      boxCheck.getPowerState().then(isOn => {
+        if (isOn) {
+          resolve(this.api.hap.Characteristic.Active.ACTIVE);
+          this.log(`[${config.name}]`, 'Sky box is on');
+        } else {
+          resolve(this.api.hap.Characteristic.Active.INACTIVE);
+          this.log(`[${config.name}]`, 'The sky box is in standby');
+        }
+      }).catch(error => {
+        this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
+        this.log.error(error);
+        reject(error);
+      });
+    });
   }
 
   send = async (remoteControl: SkyRemote, command: string | string[]) => {
