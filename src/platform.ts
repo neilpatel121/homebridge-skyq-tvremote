@@ -143,7 +143,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
               const input = value as string;
 
               this.log.info(`[${config.name}]`, 'Set Input:', value);
-              this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input.split('') ]).then(() => callback()).catch((error) => {
+              this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
                 this.log.error(error);
                 callback(error);
               });
