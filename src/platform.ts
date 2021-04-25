@@ -154,7 +154,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
           inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
           inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
           inputService.setCharacteristic(this.api.hap.Characteristic.InputSourceType, this.api.hap.Characteristic.InputSourceType.TUNER);
-          inputService.setCharacteristic(this.api.hap.Characteristic.InputDeviceType, this.api.hap.Characteristic.InputSourceType.TUNER);
+          inputService.setCharacteristic(this.api.hap.Characteristic.InputDeviceType, this.api.hap.Characteristic.InputDeviceType.TUNER);
 
           tvService.addLinkedService(inputService);
         });
