@@ -140,7 +140,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
           tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
             .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-              const input = value as string;
+              const input = value.toString();
 
               this.log.info(`[${config.name}]`, 'Set Input:', value);
               this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
@@ -150,7 +150,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
             });
 
           const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c);
-          inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, service.c);
+          inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, parseInt(service.c));
           inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
           inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
           inputService.setCharacteristic(this.api.hap.Characteristic.InputSourceType, this.api.hap.Characteristic.InputSourceType.TUNER);
