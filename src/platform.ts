@@ -149,7 +149,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
             return;
           }
 
-          const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c);
+          const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c, service.t);
           inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, parseInt(service.c));
           inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
           inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
