@@ -133,21 +133,21 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     boxCheck._request('as/services').then(data => {
       if (data.services) {
+        tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
+          .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+            const input = value.toString();
+
+            this.log.info(`[${config.name}]`, 'Set Input:', value);
+            this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
+              this.log.error(error);
+              callback(error);
+            });
+          });
+
         data.services.forEach(service => {
           if (!service.t || !service.c) {
             return;
           }
-
-          tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
-            .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-              const input = value.toString();
-
-              this.log.info(`[${config.name}]`, 'Set Input:', value);
-              this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
-                this.log.error(error);
-                callback(error);
-              });
-            });
 
           const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c);
           inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, parseInt(service.c));
