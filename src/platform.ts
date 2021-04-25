@@ -275,7 +275,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     setInterval(() => {
       this.getActive(boxCheck).then((activeState) => {
-        this.log.info(`[${config.name}]`, 'Update Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
+        this.log.debug(`[${config.name}]`, 'Update Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
         tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
       }).catch((error) => {
         this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
