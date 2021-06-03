@@ -175,7 +175,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
     tvService.getCharacteristic(this.api.hap.Characteristic.Active)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         this.getActive(boxCheck).then((activeState) => {
-          this.log.info(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
+          this.log.debug(`[${config.name}]`, 'Get Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
           callback(undefined, activeState);
         }).catch((error) => {
           this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
