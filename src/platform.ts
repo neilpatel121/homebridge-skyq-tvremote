@@ -149,7 +149,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
             favoritesData.favourites.forEach(favorite => {
               const service = servicesData.services.filter(service => service.sid === favorite.sid)[0];
 
-              if (!service.t || !service.c) {
+              if (!service || !service.t || !service.c) {
                 return;
               }
     
