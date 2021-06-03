@@ -131,32 +131,42 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       this.api.hap.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE,
     );
 
-    boxCheck._request('as/services').then(data => {
-      if (data.services) {
-        tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
-          .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-            const input = value.toString();
+    boxCheck._request('as/services/favourites').then(favoritesData => {
+      if (favoritesData.favourites) {
+        boxCheck._request('as/services').then(servicesData => {
+          if (servicesData.services) {
+            tvService.getCharacteristic(this.api.hap.Characteristic.ActiveIdentifier)
+              .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+                const input = value.toString();
 
-            this.log.info(`[${config.name}]`, 'Set Input:', value);
-            this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
-              this.log.error(error);
-              callback(error);
+                this.log.info(`[${config.name}]`, 'Set Input:', value);
+                this.send(remoteControl, [ 'backup', 'backup', 'backup', ...input ]).then(() => callback()).catch((error) => {
+                  this.log.error(error);
+                  callback(error);
+                });
+              });
+
+            favoritesData.favourites.forEach(favorite => {
+              const service = servicesData.services.filter(service => service.sid === favorite.sid)[0];
+
+              if (!service.t || !service.c) {
+                return;
+              }
+    
+              const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c, service.t);
+              inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, parseInt(service.c));
+              inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
+              inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
+              inputService.setCharacteristic(
+                this.api.hap.Characteristic.InputSourceType,
+                this.api.hap.Characteristic.InputSourceType.TUNER);
+              inputService.setCharacteristic(
+                this.api.hap.Characteristic.InputDeviceType,
+                this.api.hap.Characteristic.InputDeviceType.TUNER);
+    
+              tvService.addLinkedService(inputService);
             });
-          });
-
-        data.services.forEach(service => {
-          if (!service.t || !service.c) {
-            return;
           }
-
-          const inputService = accessory.addService(this.api.hap.Service.InputSource, service.c, service.t);
-          inputService.setCharacteristic(this.api.hap.Characteristic.Identifier, parseInt(service.c));
-          inputService.setCharacteristic(this.api.hap.Characteristic.ConfiguredName, service.t);
-          inputService.setCharacteristic(this.api.hap.Characteristic.IsConfigured, this.api.hap.Characteristic.IsConfigured.CONFIGURED);
-          inputService.setCharacteristic(this.api.hap.Characteristic.InputSourceType, this.api.hap.Characteristic.InputSourceType.TUNER);
-          inputService.setCharacteristic(this.api.hap.Characteristic.InputDeviceType, this.api.hap.Characteristic.InputDeviceType.TUNER);
-
-          tvService.addLinkedService(inputService);
         });
       }
     });
