@@ -68,29 +68,34 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
 
     if (!config.ipAddress) {
       if (key === null) {
-        if (!config.ipAddress) {
-          this.log.error('IP address not set.');
-        }
+        this.log.error('IP address not set.');
       } else {
-        if (!config.ipAddress) {
-          this.log.error(`IP address not set at device ${key + 1}.`);
-        }
+        this.log.error(`IP address not set at device ${key + 1}.`);
       }
     }
 
     return config;
   }
 
-  publishExternalAccessory(config: SkyTVDeviceConfig) {
+  async publishExternalAccessory(config: SkyTVDeviceConfig) {
     if (!config.name) {
       return;
     }
+    
     if (!config.ipAddress) {
       return;
     }
 
     const remoteControl = new SkyRemote(config.ipAddress);
     const boxCheck = new SkyQCheck({ ip: config.ipAddress });
+
+    try {
+      await this.getActive(boxCheck);
+    } catch (error) {
+      this.log.error(`[${config.name}]`, 'Perhaps the IP address is incorrect');
+
+      return;
+    }
 
     // Generate a UUID
     const uuid = this.api.hap.uuid.generate(`homebridge:${PLUGIN_NAME}:` + config.ipAddress);
@@ -179,7 +184,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
           callback(undefined, activeState);
         }).catch((error) => {
           this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
-          this.log.error(error);
           callback(error);
         });
       })
@@ -202,7 +206,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
           });
         }).catch((error) => {
           this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
-          this.log.error(error);
           callback(error);
         });
       },
@@ -289,7 +292,6 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
       }).catch((error) => {
         this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
-        this.log.error(error);
       });
     }, 10000);
   }
