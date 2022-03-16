@@ -62,4 +62,8 @@ On your Sky Q set-top box, go to:
 
 `Settings` > `Setup` > `Network` > `Advanced Settings` > `IP address`
 
-**Note:** *If you dont reserve an IP address on your router via the DHCP settings then it may get a differnt IP if you restart your router and this will cause the plugin to fail.*
+**Note:** *If you dont reserve an IP address on your router via the DHCP settings then it may get a different IP if you restart your router and this will cause the plugin to fail.*
+
+## Changing the inputs of the Sky Q set-top box
+
+On your Sky Q set-top box, set your favourite inputs.
