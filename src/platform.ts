@@ -117,6 +117,8 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
       if (info.serialNumber) {
         accessoryInfoService.setCharacteristic(this.api.hap.Characteristic.SerialNumber, info.serialNumber);
       }
+    }).catch(error => {
+      this.log.warn(`[${config.name}] Device offline or unreachable, skipping system info fetch.`);
     });
 
     // Add the TV service
@@ -167,8 +169,12 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
               tvService.addLinkedService(inputService);
             });
           }
+        }).catch(error => {
+          this.log.warn(`[${config.name}] Could not fetch services, device may be offline.`);
         });
       }
+    }).catch(error => {
+      this.log.warn(`[${config.name}] Could not fetch favourites, device may be offline.`);
     });
 
     // Handle on / off events using the active characteristic
@@ -288,11 +294,11 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         this.log.debug(`[${config.name}]`, 'Update Active: ' + (activeState ? 'ACTIVE': 'INACTIVE'));
         tvService.updateCharacteristic(this.api.hap.Characteristic.Active, activeState);
       }).catch((error) => {
-        this.log.error(`[${config.name}]`, 'Perhaps looking at this error will help you figure out why');
-        this.log.error(error);
+        this.log.debug(`[${config.name}]`, 'Device offline, reporting INACTIVE');
+        tvService.updateCharacteristic(this.api.hap.Characteristic.Active, this.api.hap.Characteristic.Active.INACTIVE);
       });
     }, 10000);
-  }
+    } 
 
   getActive = async (boxCheck: SkyQCheck): Promise<ActiveCharacterstic> => {
     return new Promise<ActiveCharacterstic>((resolve, reject) => {
@@ -304,7 +310,7 @@ export class SkyTVPlugin implements IndependentPlatformPlugin {
         }
       }).catch(error => {
         this.log.error(error);
-        reject(error);
+        resolve(this.api.hap.Characteristic.Active.INACTIVE);
       });
     });
   };
